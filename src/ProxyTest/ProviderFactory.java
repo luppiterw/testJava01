@@ -7,6 +7,8 @@ import ProxyTest.Images.CachedImageProvider;
 import ProxyTest.Images.ImageProvider;
 import ProxyTest.Images.ImageProviderFromDisk;
 
+import java.lang.reflect.Proxy;
+
 /**
  * Created by hughie on 16/10/1.
  */
@@ -20,9 +22,16 @@ public abstract class ProviderFactory {
 
 
     public static FontProvider getFontProvider() {
-//        return new FontProviderFromDisk();
-        return new CachedFontProvider(new FontProviderFromDisk());
+        Class<FontProvider> targetClass = FontProvider.class;
+        return (FontProvider) Proxy.newProxyInstance(targetClass.getClassLoader(),
+                new Class[] {targetClass},
+                new CachedProviderHandler(new FontProviderFromDisk()));
     }
+
+//    public static FontProvider getFontProvider() {
+////        return new FontProviderFromDisk();
+//        return new CachedFontProvider(new FontProviderFromDisk());
+//    }
 
     public static ImageProvider getImageProvider() {
         return new CachedImageProvider(new ImageProviderFromDisk());
